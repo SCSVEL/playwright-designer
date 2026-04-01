@@ -3,7 +3,7 @@
   "displayName": "Playwright Designer",
   "description": "Focused Playwright workspace panels for page objects, tests, fixtures, utils, reports, data/resources, and hooks.",
   "version": "0.0.4",
-  "publisher": "local-dev",
+  "publisher": "scsvel",
   "engines": {
     "vscode": "^1.110.0"
   },
@@ -33,7 +33,7 @@
     "testing",
     "vscode-extension"
   ],
-  "author": "",
+  "author": "Shan Chinna",
   "license": "ISC",
   "type": "commonjs",
   "contributes": {
