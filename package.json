@@ -1,0 +1,267 @@
+{
+  "name": "playwright-designer",
+  "displayName": "Playwright Designer",
+  "description": "Focused Playwright workspace panels for page objects, tests, fixtures, utils, reports, data/resources, and hooks.",
+  "version": "0.0.4",
+  "publisher": "local-dev",
+  "engines": {
+    "vscode": "^1.110.0"
+  },
+  "main": "./out/extension.js",
+  "categories": [
+    "Testing"
+  ],
+  "activationEvents": [
+    "onView:playwrightDesigner.pageObjects",
+    "onView:playwrightDesigner.dataResources",
+    "onView:playwrightDesigner.tests",
+    "onView:playwrightDesigner.reports",
+    "onView:playwrightDesigner.fixtures",
+    "onView:playwrightDesigner.utils",
+    "onView:playwrightDesigner.hooks",
+    "onCommand:playwrightDesigner.refreshAll",
+    "onCommand:playwrightDesigner.hooks.create"
+  ],
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "echo \"No tests yet\"",
+    "package:vsix": "npm run build && npx @vscode/vsce package --allow-missing-repository"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "vscode-extension"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "playwrightDesigner",
+          "title": "Playwright Designer",
+          "icon": "resources/playwright-designer-activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "playwrightDesigner": [
+        {
+          "id": "playwrightDesigner.pageObjects",
+          "name": "Page Objects",
+          "visibility": "visible"
+        },
+        {
+          "id": "playwrightDesigner.dataResources",
+          "name": "Data & Resources",
+          "visibility": "visible"
+        },
+        {
+          "id": "playwrightDesigner.tests",
+          "name": "Tests",
+          "visibility": "visible"
+        },
+        {
+          "id": "playwrightDesigner.reports",
+          "name": "Reports",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "playwrightDesigner.fixtures",
+          "name": "Fixtures",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "playwrightDesigner.utils",
+          "name": "Utils",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "playwrightDesigner.hooks",
+          "name": "Hooks",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "playwrightDesigner.refreshAll",
+        "title": "Refresh All"
+      },
+      {
+        "command": "playwrightDesigner.openFile",
+        "title": "Open File"
+      },
+      {
+        "command": "playwrightDesigner.createFile",
+        "title": "New File"
+      },
+      {
+        "command": "playwrightDesigner.createFolder",
+        "title": "New Folder"
+      },
+      {
+        "command": "playwrightDesigner.deleteFile",
+        "title": "Delete File"
+      },
+      {
+        "command": "playwrightDesigner.deleteFolder",
+        "title": "Delete Folder"
+      },
+      {
+        "command": "playwrightDesigner.hooks.create",
+        "title": "Create Hook"
+      },
+      {
+        "command": "playwrightDesigner.hooks.toggle",
+        "title": "Toggle Hook"
+      },
+      {
+        "command": "playwrightDesigner.hooks.delete",
+        "title": "Delete Hook"
+      },
+      {
+        "command": "playwrightDesigner.hooks.runNow",
+        "title": "Run Hook Now"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "playwrightDesigner.refreshAll",
+          "when": "view =~ /^playwrightDesigner\\./",
+          "group": "navigation"
+        },
+        {
+          "command": "playwrightDesigner.hooks.create",
+          "when": "view == playwrightDesigner.hooks",
+          "group": "navigation"
+        },
+        {
+          "command": "playwrightDesigner.createFile",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "playwrightDesigner.createFolder",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "playwrightDesigner.createFile",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "playwrightDesigner.createFolder",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
+          "group": "navigation@2"
+        },
+        {
+          "command": "playwrightDesigner.deleteFile",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem == fileItem",
+          "group": "inline@3"
+        },
+        {
+          "command": "playwrightDesigner.deleteFolder",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
+          "group": "navigation@3"
+        },
+        {
+          "command": "playwrightDesigner.hooks.toggle",
+          "when": "view == playwrightDesigner.hooks && viewItem == hookItem",
+          "group": "inline"
+        },
+        {
+          "command": "playwrightDesigner.hooks.runNow",
+          "when": "view == playwrightDesigner.hooks && viewItem == hookItem",
+          "group": "inline"
+        },
+        {
+          "command": "playwrightDesigner.hooks.delete",
+          "when": "view == playwrightDesigner.hooks && viewItem == hookItem",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Playwright Designer",
+      "properties": {
+        "playwrightDesigner.languageMode": {
+          "type": "string",
+          "enum": [
+            "ts-js",
+            "python"
+          ],
+          "default": "ts-js",
+          "description": "Select whether discovery patterns should target TypeScript/JavaScript projects or Python projects."
+        },
+        "playwrightDesigner.maxFilesPerCategory": {
+          "type": "number",
+          "default": 2000,
+          "minimum": 100,
+          "description": "Soft cap for files discovered per category per workspace folder."
+        },
+        "playwrightDesigner.customPatterns": {
+          "type": "object",
+          "default": {},
+          "description": "Optional category pattern overrides. Keys: pageObjects, dataResources, tests, reports, fixtures, utils. Value: array of glob strings."
+        },
+        "playwrightDesigner.folderMappings": {
+          "type": "object",
+          "default": {
+            "pageObjects": [
+              "src/pom",
+              "automation/page_objects",
+              "pages"
+            ],
+            "tests": [
+              "tests/e2e",
+              "qa/specs",
+              "tests"
+            ],
+            "fixtures": [
+              "tests/fixtures",
+              "tests"
+            ],
+            "dataResources": [
+              "resources",
+              "test-data",
+              "data"
+            ],
+            "utils": [
+              "shared/utils",
+              "utils",
+              "helpers",
+              "common/utils"
+            ],
+            "reports": [
+              "playwright-report",
+              "allure-report",
+              "reports"
+            ]
+          },
+          "description": "Manual folder-to-panel mapping. Keys: pageObjects, dataResources, tests, reports, fixtures, utils. Value: array of folder paths (e.g. \"src/pom\", \"qa/tests\")."
+        },
+        "playwrightDesigner.hooks": {
+          "type": "array",
+          "default": [],
+          "description": "Hook definitions. Each hook supports name, enabled, trigger, matchGlob, command, cwd, and env."
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/vscode": "^1.110.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "minimatch": "^10.2.5"
+  }
+}
