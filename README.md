@@ -40,20 +40,12 @@ Current version: 0.0.4
 - `playwrightDesigner.folderMappings`: optional manual folder-to-panel mapping
 - `playwrightDesigner.hooks`: project hook definitions
 
-Default folder mapping includes:
+## Others
 
-- pageObjects: `src/pom`, `automation/page_objects`, `pages`
-- tests: `tests/e2e`, `qa/specs`, `tests`
-- fixtures: `tests/fixtures`, `tests` (for `conftest.py` discovery)
-- dataResources: `resources`, `test-data`, `data`
-- utils: `shared/utils`, `utils`, `helpers`, `common/utils`
-- reports: `playwright-report`, `allure-report`, `reports`
+- Data & Resources also includes environment files by default (`.env`, `.env.*`).
+- Fixtures include `conftest.py` by default (`tests/conftest.py` and `**/conftest.py` in Python mode).
+- Duplicate files are automatically deduplicated so the same file URI is shown only once per category panel.
 
-Data & Resources also includes environment files by default (`.env`, `.env.*`).
-
-Fixtures include `conftest.py` by default (`tests/conftest.py` and `**/conftest.py` in Python mode).
-
-Duplicate files are automatically deduplicated so the same file URI is shown only once per category panel.
 
 ### Manual Folder Mapping Example
 
