@@ -1,0 +1,102 @@
+{
+  "playwrightDesigner.folderMappings": {
+    "pageObjects": [
+      {
+        "folder": "src/pom",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      },
+      {
+        "folder": "automation/page_objects",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      },
+      {
+        "folder": "pages",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      }
+    ],
+    "tests": [
+      {
+        "folder": "tests/e2e",
+        "filePattern": "**/*.spec.ts"
+      },
+      {
+        "folder": "qa/specs",
+        "filePattern": "**/*.test.ts"
+      },
+      {
+        "folder": "tests",
+        "filePattern": "**/test_*.py"
+      }
+    ],
+    "fixtures": [
+      {
+        "folder": "tests/fixtures",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      },
+      {
+        "folder": "tests",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      }
+    ],
+    "dataResources": [
+      {
+        "folder": "resources",
+        "filePattern": "**/*"
+      },
+      {
+        "folder": "test-data",
+        "filePattern": "**/*"
+      },
+      {
+        "folder": "data",
+        "filePattern": "**/*"
+      }
+    ],
+    "utils": [
+      {
+        "folder": "shared/utils",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      },
+      {
+        "folder": "utils",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      },
+      {
+        "folder": "helpers",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      },
+      {
+        "folder": "common/utils",
+        "filePattern": "**/*.{ts,tsx,js,jsx,py}"
+      }
+    ],
+    "reports": [
+      {
+        "folder": "playwright-report",
+        "filePattern": "**/*.html"
+      },
+      {
+        "folder": "allure-report",
+        "filePattern": "**/*.xml"
+      },
+      {
+        "folder": "reports",
+        "filePattern": "**/*.html"
+      }
+    ],
+    "github": [
+      {
+        "folder": ".github/skills",
+        "filePattern": "**/SKILL.md"
+      },
+      {
+        "folder": ".github/instructions",
+        "filePattern": "**/*.instructions.md"
+      },
+      {
+        "folder": ".github/hooks",
+        "filePattern": "**/*"
+      }
+    ]
+  }
+}

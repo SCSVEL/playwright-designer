@@ -2,7 +2,7 @@
 
 Playwright Designer is a VS Code extension that adds a focused Activity Bar section to work faster with Playwright projects.
 
-Current version: 0.0.6
+Current version: 0.0.7
 
 ## Included Panels
 
@@ -34,7 +34,7 @@ Current version: 0.0.6
 - `playwrightDesigner.maxFilesPerCategory`: max files scanned per category/folder
 - `playwrightDesigner.customPatterns`: optional category pattern overrides
 - `playwrightDesigner.folderMappings`: optional manual folder-to-panel mapping with explicit filePattern per entry
-- `playwrightDesigner.github`: .github/* files
+- `playwrightDesigner.hooks`: project hook definitions
 
 ## Others
 

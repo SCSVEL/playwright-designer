@@ -2,7 +2,7 @@
   "name": "playwright-designer",
   "displayName": "Playwright Designer",
   "description": "Focused Playwright workspace panels for page objects, tests, fixtures, utils, reports, data/resources, and GitHub automation files.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "scsvel",
   "icon": "resources/playwright-designer-activity-128.png",
   "engines": {
