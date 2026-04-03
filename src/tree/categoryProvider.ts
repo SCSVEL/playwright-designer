@@ -3,7 +3,7 @@ import { CategoryId } from "../models/category";
 import { PlaywrightTreeNode } from "../models/treeNode";
 import { WorkspaceScanner } from "../services/workspaceScanner";
 
-type FileCategory = Exclude<CategoryId, "hooks">;
+type FileCategory = CategoryId;
 
 export class CategoryProvider implements vscode.TreeDataProvider<PlaywrightTreeNode> {
   private readonly onDidChangeTreeDataEmitter = new vscode.EventEmitter<PlaywrightTreeNode | undefined>();

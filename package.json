@@ -1,9 +1,10 @@
 {
   "name": "playwright-designer",
   "displayName": "Playwright Designer",
-  "description": "Focused Playwright workspace panels for page objects, tests, fixtures, utils, reports, data/resources, and hooks.",
-  "version": "0.0.4",
+  "description": "Focused Playwright workspace panels for page objects, tests, fixtures, utils, reports, data/resources, and GitHub automation files.",
+  "version": "0.0.6",
   "publisher": "scsvel",
+  "icon": "resources/playwright-designer-activity-128.png",
   "engines": {
     "vscode": "^1.110.0"
   },
@@ -18,7 +19,7 @@
     "onView:playwrightDesigner.reports",
     "onView:playwrightDesigner.fixtures",
     "onView:playwrightDesigner.utils",
-    "onView:playwrightDesigner.hooks",
+    "onView:playwrightDesigner.github",
     "onCommand:playwrightDesigner.refreshAll",
     "onCommand:playwrightDesigner.hooks.create"
   ],
@@ -79,8 +80,8 @@
           "visibility": "collapsed"
         },
         {
-          "id": "playwrightDesigner.hooks",
-          "name": "Hooks",
+          "id": "playwrightDesigner.github",
+          "name": "GitHub",
           "visibility": "visible"
         }
       ]
@@ -136,54 +137,54 @@
         },
         {
           "command": "playwrightDesigner.hooks.create",
-          "when": "view == playwrightDesigner.hooks",
+          "when": "false",
           "group": "navigation"
         },
         {
           "command": "playwrightDesigner.createFile",
-          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils|github)$/",
           "group": "navigation@1"
         },
         {
           "command": "playwrightDesigner.createFolder",
-          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils|github)$/",
           "group": "navigation@2"
         }
       ],
       "view/item/context": [
         {
           "command": "playwrightDesigner.createFile",
-          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils|github)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
           "group": "navigation@1"
         },
         {
           "command": "playwrightDesigner.createFolder",
-          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils|github)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
           "group": "navigation@2"
         },
         {
           "command": "playwrightDesigner.deleteFile",
-          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem == fileItem",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils|github)$/ && viewItem == fileItem",
           "group": "inline@3"
         },
         {
           "command": "playwrightDesigner.deleteFolder",
-          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
+          "when": "view =~ /^playwrightDesigner\\.(pageObjects|dataResources|tests|reports|fixtures|utils|github)$/ && viewItem =~ /^(workspaceItem|fileItem)$/",
           "group": "navigation@3"
         },
         {
           "command": "playwrightDesigner.hooks.toggle",
-          "when": "view == playwrightDesigner.hooks && viewItem == hookItem",
+          "when": "false",
           "group": "inline"
         },
         {
           "command": "playwrightDesigner.hooks.runNow",
-          "when": "view == playwrightDesigner.hooks && viewItem == hookItem",
+          "when": "false",
           "group": "inline"
         },
         {
           "command": "playwrightDesigner.hooks.delete",
-          "when": "view == playwrightDesigner.hooks && viewItem == hookItem",
+          "when": "false",
           "group": "inline"
         }
       ]
@@ -209,43 +210,111 @@
         "playwrightDesigner.customPatterns": {
           "type": "object",
           "default": {},
-          "description": "Optional category pattern overrides. Keys: pageObjects, dataResources, tests, reports, fixtures, utils. Value: array of glob strings."
+          "description": "Optional category pattern overrides. Keys: pageObjects, dataResources, tests, reports, fixtures, utils, github. Value: array of glob strings."
         },
         "playwrightDesigner.folderMappings": {
           "type": "object",
           "default": {
             "pageObjects": [
-              "src/pom",
-              "automation/page_objects",
-              "pages"
+              {
+                "folder": "src/pom",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              },
+              {
+                "folder": "automation/page_objects",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              },
+              {
+                "folder": "pages",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              }
             ],
             "tests": [
-              "tests/e2e",
-              "qa/specs",
-              "tests"
+              {
+                "folder": "tests/e2e",
+                "filePattern": "*.spec.ts"
+              },
+              {
+                "folder": "qa/specs",
+                "filePattern": "*.test.ts"
+              },
+              {
+                "folder": "tests",
+                "filePattern": "test_*.py"
+              }
             ],
             "fixtures": [
-              "tests/fixtures",
-              "tests"
+              {
+                "folder": "tests/fixtures",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              },
+              {
+                "folder": "tests",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              }
             ],
             "dataResources": [
-              "resources",
-              "test-data",
-              "data"
+              {
+                "folder": "resources",
+                "filePattern": "**/*"
+              },
+              {
+                "folder": "test-data",
+                "filePattern": "**/*"
+              },
+              {
+                "folder": "data",
+                "filePattern": "**/*"
+              }
             ],
             "utils": [
-              "shared/utils",
-              "utils",
-              "helpers",
-              "common/utils"
+              {
+                "folder": "shared/utils",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              },
+              {
+                "folder": "utils",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              },
+              {
+                "folder": "helpers",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              },
+              {
+                "folder": "common/utils",
+                "filePattern": "*.{ts,tsx,js,jsx,py}"
+              }
             ],
             "reports": [
-              "playwright-report",
-              "allure-report",
-              "reports"
+              {
+                "folder": "playwright-report",
+                "filePattern": "*.html"
+              },
+              {
+                "folder": "allure-report",
+                "filePattern": "*.xml"
+              },
+              {
+                "folder": "reports",
+                "filePattern": "*.html"
+              }
+            ],
+            "github": [
+              {
+                "folder": ".github/skills",
+                "filePattern": "SKILL.md"
+              },
+              {
+                "folder": ".github/instructions",
+                "filePattern": "*.instructions.md"
+              },
+              {
+                "folder": ".github/hooks",
+                "filePattern": "**/*"
+              }
             ]
           },
-          "description": "Manual folder-to-panel mapping. Keys: pageObjects, dataResources, tests, reports, fixtures, utils. Value: array of folder paths (e.g. \"src/pom\", \"qa/tests\")."
+          "description": "Manual folder-to-panel mapping. Keys: pageObjects, dataResources, tests, reports, fixtures, utils, github. Value: array of objects with folder and filePattern. Folder matching is any-level by default."
         },
         "playwrightDesigner.hooks": {
           "type": "array",

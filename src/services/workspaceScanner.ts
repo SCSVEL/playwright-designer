@@ -1,8 +1,12 @@
 import * as vscode from "vscode";
+import { minimatch } from "minimatch";
 import { DesignerSettings } from "../config/settings";
 import { CategoryId } from "../models/category";
 
-type FileCategory = Exclude<CategoryId, "hooks">;
+type FileCategory = CategoryId;
+
+const FIND_FILES_EXCLUDE_PATTERN = "**/{node_modules,.git,.venv,venv,__pycache__}/**";
+const GLOBAL_FILE_EXCLUDE_PATTERNS = ["**/*.pyc"];
 
 export class WorkspaceScanner {
   private readonly byCategory = new Map<FileCategory, Map<string, vscode.Uri[]>>();
@@ -52,10 +56,10 @@ export class WorkspaceScanner {
       }
 
       const include = new vscode.RelativePattern(folder, pattern);
-      const matches = await vscode.workspace.findFiles(include, "**/{node_modules,.git,.venv,venv}/**", maxFiles);
+      const matches = await vscode.workspace.findFiles(include, FIND_FILES_EXCLUDE_PATTERN, maxFiles);
 
       for (const uri of matches) {
-        if (this.shouldExcludeFromCategory(uri, category)) {
+        if (this.shouldExcludeFromCategory(uri, category, folder)) {
           continue;
         }
 
@@ -76,12 +80,26 @@ export class WorkspaceScanner {
     return results.sort((a, b) => a.fsPath.localeCompare(b.fsPath));
   }
 
-  private shouldExcludeFromCategory(uri: vscode.Uri, category: FileCategory): boolean {
+  private shouldExcludeFromCategory(uri: vscode.Uri, category: FileCategory, folder: vscode.WorkspaceFolder): boolean {
+    const relativePath = this.toRelativePath(uri, folder);
+    if (GLOBAL_FILE_EXCLUDE_PATTERNS.some((pattern) => minimatch(relativePath, pattern, { dot: true }))) {
+      return true;
+    }
+
     if (category !== "tests") {
       return false;
     }
 
     const fileName = uri.path.split("/").pop()?.toLowerCase();
     return fileName === "conftest.py";
+  }
+
+  private toRelativePath(uri: vscode.Uri, folder: vscode.WorkspaceFolder): string {
+    const folderPath = folder.uri.path.endsWith("/") ? folder.uri.path : `${folder.uri.path}/`;
+    if (uri.path.startsWith(folderPath)) {
+      return uri.path.slice(folderPath.length);
+    }
+
+    return uri.path.replace(/^\//, "");
   }
 }

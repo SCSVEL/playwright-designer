@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { PatternMap, getDefaultPatterns } from "./defaultPatterns";
 import { HookDefinition } from "../models/hook";
-import { LanguageMode } from "../models/category";
+import { CategoryId, LanguageMode } from "../models/category";
 
 export interface DesignerSettings {
   languageMode: LanguageMode;
@@ -9,6 +9,8 @@ export interface DesignerSettings {
   patterns: PatternMap;
   hooks: HookDefinition[];
 }
+
+type FolderMappingEntry = string | { folder?: unknown; filePattern?: unknown };
 
 function toLanguageMode(value: unknown): LanguageMode {
   return value === "python" ? "python" : "ts-js";
@@ -25,7 +27,8 @@ function mergePatterns(defaults: PatternMap, custom: unknown): PatternMap {
     tests: [...defaults.tests],
     reports: [...defaults.reports],
     fixtures: [...defaults.fixtures],
-    utils: [...defaults.utils]
+    utils: [...defaults.utils],
+    github: [...defaults.github]
   };
 
   for (const key of Object.keys(output) as Array<keyof PatternMap>) {
@@ -44,18 +47,75 @@ function toFolderPattern(folderPath: string): string | undefined {
     return undefined;
   }
 
-  if (normalized.endsWith("/**")) {
+  if (normalized.includes("*")) {
     return normalized;
   }
 
-  if (normalized.endsWith("/")) {
-    return `${normalized}**`;
+  if (normalized.endsWith("/**")) {
+    return normalized.startsWith("**/") ? normalized : `**/${normalized}`;
   }
 
-  return `${normalized}/**`;
+  if (normalized.endsWith("/")) {
+    const folder = normalized.slice(0, -1);
+    return folder.startsWith("**/") ? `${folder}/**` : `**/${folder}/**`;
+  }
+
+  return normalized.startsWith("**/") ? `${normalized}/**` : `**/${normalized}/**`;
 }
 
-function applyFolderMappings(patterns: PatternMap, mappings: unknown): PatternMap {
+function normalizeFilePattern(filePattern: string): string | undefined {
+  const normalized = filePattern.trim().replace(/\\/g, "/").replace(/^\.?\//, "");
+  return normalized || undefined;
+}
+
+function getDefaultFolderMappingFilePatterns(category: CategoryId, mode: LanguageMode): string[] {
+  if (category === "tests") {
+    if (mode === "python") {
+      return ["test_*.py", "*_test.py"];
+    }
+
+    return ["*.spec.ts", "*.test.ts", "*.spec.tsx", "*.test.tsx", "*.spec.js", "*.test.js", "*.spec.jsx", "*.test.jsx"];
+  }
+
+  if (category === "reports") {
+    return ["*.html", "*.xml"];
+  }
+
+  return ["**/*"];
+}
+
+function composeMappedPatterns(folderPattern: string, filePatterns: string[]): string[] {
+  const base = folderPattern.endsWith("/**") ? folderPattern : `${folderPattern}/**`;
+  return filePatterns
+    .map((entry) => normalizeFilePattern(entry))
+    .filter((entry): entry is string => Boolean(entry))
+    .map((entry) => `${base}/${entry}`)
+    .map((entry) => entry.replace(/\/\*\*\/\*\*\//g, "/**/"));
+}
+
+function toFolderMappingEntry(rawEntry: FolderMappingEntry): { folder: string; filePatterns?: string[] } | undefined {
+  if (typeof rawEntry === "string") {
+    const folder = rawEntry.trim();
+    return folder ? { folder } : undefined;
+  }
+
+  if (!rawEntry || typeof rawEntry !== "object") {
+    return undefined;
+  }
+
+  const folder = typeof rawEntry.folder === "string" ? rawEntry.folder.trim() : "";
+  if (!folder) {
+    return undefined;
+  }
+
+  if (typeof rawEntry.filePattern === "string" && rawEntry.filePattern.trim()) {
+    return { folder, filePatterns: [rawEntry.filePattern] };
+  }
+
+  return { folder };
+}
+
+function applyFolderMappings(patterns: PatternMap, mappings: unknown, mode: LanguageMode): PatternMap {
   if (!mappings || typeof mappings !== "object") {
     return patterns;
   }
@@ -66,7 +126,8 @@ function applyFolderMappings(patterns: PatternMap, mappings: unknown): PatternMa
     tests: [...patterns.tests],
     reports: [...patterns.reports],
     fixtures: [...patterns.fixtures],
-    utils: [...patterns.utils]
+    utils: [...patterns.utils],
+    github: [...patterns.github]
   };
 
   for (const key of Object.keys(output) as Array<keyof PatternMap>) {
@@ -75,18 +136,24 @@ function applyFolderMappings(patterns: PatternMap, mappings: unknown): PatternMa
       continue;
     }
 
-    for (const rawFolder of candidate) {
-      if (typeof rawFolder !== "string") {
+    for (const rawEntry of candidate) {
+      const entry = toFolderMappingEntry(rawEntry as FolderMappingEntry);
+      if (!entry) {
         continue;
       }
 
-      const folderPattern = toFolderPattern(rawFolder);
+      const folderPattern = toFolderPattern(entry.folder);
       if (!folderPattern) {
         continue;
       }
 
-      if (!output[key].includes(folderPattern)) {
-        output[key].push(folderPattern);
+      const filePatterns = entry.filePatterns ?? getDefaultFolderMappingFilePatterns(key, mode);
+      const mapped = composeMappedPatterns(folderPattern, filePatterns);
+
+      for (const mappedPattern of mapped) {
+        if (!output[key].includes(mappedPattern)) {
+          output[key].push(mappedPattern);
+        }
       }
     }
   }
@@ -133,7 +200,7 @@ export function getDesignerSettings(): DesignerSettings {
   const defaults = getDefaultPatterns(mode);
 
   const basePatterns = mergePatterns(defaults, config.get<unknown>("customPatterns"));
-  const patterns = applyFolderMappings(basePatterns, config.get<unknown>("folderMappings"));
+  const patterns = applyFolderMappings(basePatterns, config.get<unknown>("folderMappings"), mode);
   const rawHooks = config.get<unknown[]>("hooks", []);
   const hooks = rawHooks.map((item) => normalizeHook(item)).filter((item): item is HookDefinition => Boolean(item));
 

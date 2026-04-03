@@ -5,7 +5,7 @@ export type CategoryId =
   | "reports"
   | "fixtures"
   | "utils"
-  | "hooks";
+  | "github";
 
 export type LanguageMode = "ts-js" | "python";
 
@@ -54,9 +54,9 @@ export const CATEGORY_DEFINITIONS: CategoryDefinition[] = [
     supportsFiles: true
   },
   {
-    id: "hooks",
-    label: "Hooks",
-    viewId: "playwrightDesigner.hooks",
-    supportsFiles: false
+    id: "github",
+    label: "GitHub",
+    viewId: "playwrightDesigner.github",
+    supportsFiles: true
   }
 ];

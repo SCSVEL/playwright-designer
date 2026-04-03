@@ -4,14 +4,13 @@ import { minimatch } from "minimatch";
 import { getDesignerSettings } from "./config/settings";
 import { CategoryProvider } from "./tree/categoryProvider";
 import { WorkspaceScanner } from "./services/workspaceScanner";
-import { HooksProvider } from "./tree/hooksProvider";
 import { HookService } from "./services/hookService";
 import { CategoryId } from "./models/category";
 import { FileNode, WorkspaceNode } from "./models/treeNode";
 
-type FileCategory = Exclude<CategoryId, "hooks">;
+type FileCategory = CategoryId;
 
-const FILE_CATEGORIES: FileCategory[] = ["pageObjects", "dataResources", "tests", "reports", "fixtures", "utils"];
+const FILE_CATEGORIES: FileCategory[] = ["pageObjects", "dataResources", "tests", "reports", "fixtures", "utils", "github"];
 
 const VIEW_BY_CATEGORY: Record<FileCategory, string> = {
   pageObjects: "playwrightDesigner.pageObjects",
@@ -19,7 +18,8 @@ const VIEW_BY_CATEGORY: Record<FileCategory, string> = {
   tests: "playwrightDesigner.tests",
   reports: "playwrightDesigner.reports",
   fixtures: "playwrightDesigner.fixtures",
-  utils: "playwrightDesigner.utils"
+  utils: "playwrightDesigner.utils",
+  github: "playwrightDesigner.github"
 };
 
 function toHookId(arg: unknown): string | undefined {
@@ -187,7 +187,6 @@ async function deleteFolderEntry(arg: unknown): Promise<boolean> {
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const scanner = new WorkspaceScanner();
   const hookService = new HookService();
-  const hooksProvider = new HooksProvider(hookService);
 
   const providers = new Map<FileCategory, CategoryProvider>();
   for (const category of FILE_CATEGORIES) {
@@ -196,13 +195,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     context.subscriptions.push(vscode.window.registerTreeDataProvider(VIEW_BY_CATEGORY[category], provider));
   }
 
-  context.subscriptions.push(vscode.window.registerTreeDataProvider("playwrightDesigner.hooks", hooksProvider));
-
   const refreshAll = async (): Promise<void> => {
     const settings = getDesignerSettings();
     await scanner.refresh(settings);
     providers.forEach((provider) => provider.refresh());
-    hooksProvider.refresh();
   };
 
   let refreshTimer: NodeJS.Timeout | undefined;
@@ -258,7 +254,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
 
       await hookService.toggleHook(hookId);
-      hooksProvider.refresh();
     }),
     vscode.commands.registerCommand("playwrightDesigner.hooks.delete", async (arg: unknown) => {
       const hookId = toHookId(arg);
@@ -267,7 +262,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
 
       await hookService.deleteHook(hookId);
-      hooksProvider.refresh();
     }),
     vscode.commands.registerCommand("playwrightDesigner.hooks.runNow", async (arg: unknown) => {
       const hookId = toHookId(arg);
