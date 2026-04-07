@@ -4,6 +4,9 @@ Playwright Designer is a VS Code extension that adds a focused Activity Bar sect
 
 Current version: 0.0.7
 
+Install from here - https://marketplace.visualstudio.com/items?itemName=scsvel.playwright-designer or directly from VS Code
+
+
 ## Included Panels
 
 - Page Objects
